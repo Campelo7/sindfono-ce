@@ -51,3 +51,41 @@ npm run dev
 
 - Azul institucional: `#1e40af`, `#0f2057`
 - Laranja (CTAs): `#f97316`
+
+
+## Objetivo
+
+Organizar o processo de sindicalização em uma aplicação web, reunindo o envio de informações e documentos, a revisão administrativa e o acompanhamento pelo associado.
+
+## Funcionalidades
+
+* Cadastro e autenticação de usuários.
+* Solicitação de sindicalização em etapas.
+* Envio de documentos.
+* Revisão de solicitações pela administração.
+* Confirmação administrativa de pagamentos.
+* Portal do associado.
+* Publicação de eventos.
+
+## Organização do código
+
+* `src/app`: páginas e rotas.
+* `src/components`: componentes reutilizáveis.
+* `src/features`: interfaces organizadas por funcionalidade.
+* `src/actions`: operações executadas no servidor.
+* `src/validations`: esquemas de validação.
+* `src/lib`: utilitários e integração com Supabase.
+* `supabase/migrations`: alterações na estrutura e nas políticas do banco.
+
+## Testes
+
+O projeto inclui testes com Vitest para validações e regras de negócio. Entre os cenários estão a rejeição de confirmação duplicada de pagamento e a restrição de operações administrativas.
+
+Para executar os testes, utilize `npm run test`.
+
+## Melhorias planejadas
+
+* Adicionar imagens dos principais fluxos.
+* Revisar as instruções de configuração local.
+* Automatizar a execução de testes e build.
+* Documentar as decisões técnicas e limitações conhecidas.
