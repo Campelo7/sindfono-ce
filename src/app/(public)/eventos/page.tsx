@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { CalendarDays } from "lucide-react";
 import { getPublicEvents } from "@/lib/events-public";
 import { EventCard } from "@/components/events/event-card";
+import { CampaignBanner } from "@/components/events/campaign-banner";
 
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Eventos e Atualizações — Sindfono CE",
+  title: "Eventos — Sindfono CE",
   description:
     "Reuniões, assembleias, treinamentos e comunicados oficiais do Sindicato dos Fonoaudiólogos do Estado do Ceará.",
 };
@@ -16,39 +16,46 @@ export default async function EventosPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Cabeçalho da página */}
       <section className="border-b border-gray-200 bg-white pt-24 pb-10 sm:pt-32 sm:pb-12">
         <div className="container mx-auto max-w-5xl px-4 sm:px-6">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl bg-orange-100 p-2">
-              <CalendarDays className="shrink-0 text-orange-500" size={22} strokeWidth={2} />
+            <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50 p-2.5">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="3"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <circle cx="8" cy="13" r="1" fill="#2563eb"/>
+                <circle cx="12" cy="13" r="1" fill="#2563eb"/>
+                <circle cx="16" cy="13" r="1" fill="#2563eb"/>
+                <circle cx="8" cy="17" r="1" fill="#2563eb"/>
+                <circle cx="12" cy="17" r="1" fill="#2563eb"/>
+              </svg>
             </div>
-            <span className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-orange-500">
+            <span className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-blue-600">
               Sindfono CE
             </span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-[#0f1f5c] leading-tight">
-            Eventos e atualizações
+            Eventos
           </h1>
           <p className="mt-3 text-sm sm:text-base text-gray-600 max-w-2xl">
-            Acompanhe reuniões, assembleias, treinamentos e comunicados oficiais do
-            Sindicato dos Fonoaudiólogos do Estado do Ceará.
+            Acompanhe comunicados, reuniões, assembleias e acontecimentos da categoria.
           </p>
         </div>
       </section>
 
       <section className="py-8 sm:py-12">
-        <div className="container mx-auto max-w-5xl px-4 sm:px-6">
-          {events.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-8 sm:p-12 text-center">
-              <CalendarDays size={44} className="mx-auto text-gray-300 mb-3" />
-              <p className="text-gray-600 font-semibold">
-                Nenhum evento publicado no momento.
-              </p>
-              <p className="text-gray-500 text-sm mt-1">
-                Volte em breve — as próximas ações do sindicato aparecem aqui.
-              </p>
-            </div>
-          ) : (
+        <div className="container mx-auto max-w-5xl px-4 sm:px-6 space-y-10">
+
+          {/* Banner do Mês (Novembro Azul) */}
+          <div>
+            <CampaignBanner variant="full" />
+          </div>
+
+          {/* Lista de eventos */}
+          {events.length > 0 && (
             <div className="grid gap-5 sm:gap-6 grid-cols-1 sm:grid-cols-2">
               {events.map((event) => (
                 <EventCard key={event.id} event={event} />
@@ -56,14 +63,19 @@ export default async function EventosPage() {
             </div>
           )}
 
-          <div className="mt-12 text-center">
+          {/* Botão de retorno */}
+          <div className="pt-2 text-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-[#0f1f5c] px-6 py-2.5 text-sm font-semibold text-[#0f1f5c] hover:bg-[#0f1f5c] hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-[#0f1f5c] px-6 py-2.5 text-sm font-semibold text-[#0f1f5c] hover:bg-[#0f1f5c] hover:text-white transition"
             >
-              ← Voltar para o início
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 5l-7 7 7 7"/>
+              </svg>
+              Voltar para o início
             </Link>
           </div>
+
         </div>
       </section>
     </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDays, ArrowRight } from "lucide-react";
 import { getFeaturedEvents } from "@/lib/events-public";
 import { EventCard } from "@/components/events/event-card";
+import { CampaignBanner } from "@/components/events/campaign-banner";
 
 export const revalidate = 300;
 
@@ -128,35 +129,40 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── ATUALIZAÇÕES / EVENTOS ── */}
-      {featuredEvents.length > 0 && (
-        <section id="atualizacoes" className="home-events">
-          <div className="container">
-            <div className="section-header">
-              <span className="section-tag">Fique por dentro</span>
-              <h2 className="section-title">
-                Últimas<br />atualizações
-              </h2>
-              <p className="section-desc">
-                Reuniões, assembleias, treinamentos e comunicados oficiais publicados
-                pela diretoria do Sindfono CE.
-              </p>
-            </div>
+      {/* ── EVENTOS ── */}
+      <section id="eventos" className="home-events">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-tag">Sindfono CE</span>
+            <h2 className="section-title">
+              Eventos
+            </h2>
+            <p className="section-desc">
+              Acompanhe reuniões, assembleias, comunicados e acontecimentos da categoria.
+            </p>
+          </div>
 
+          {/* Banner do Mês */}
+          <div className="mb-10">
+            <CampaignBanner variant="compact" />
+          </div>
+
+          {/* Grid de eventos se houver */}
+          {featuredEvents.length > 0 && (
             <div className="events-grid">
               {featuredEvents.map((event) => (
                 <EventCard key={event.id} event={event} variant="compact" />
               ))}
             </div>
+          )}
 
-            <div style={{ textAlign: "center", marginTop: "2rem" }}>
-              <Link href="/eventos" className="btn-events">
-                <CalendarDays size={16} /> Ver todos os eventos <ArrowRight size={14} />
-              </Link>
-            </div>
+          <div style={{ textAlign: "center", marginTop: "2rem" }}>
+            <Link href="/eventos" className="btn-events">
+              <CalendarDays size={16} /> Ver todos os eventos <ArrowRight size={14} />
+            </Link>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* ── BENEFÍCIOS ── */}
       <section className="beneficios" id="beneficios">
