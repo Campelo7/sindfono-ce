@@ -36,8 +36,8 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
-    deviceSizes: [64, 96, 128, 256, 384, 640],
-    imageSizes: [32, 48, 64, 96, 128, 148, 256],
+    deviceSizes: [64, 96, 128, 256, 384, 640, 1024],
+    imageSizes: [32, 48, 64, 96, 128, 148, 256, 384],
     remotePatterns: [
       { protocol: "https", hostname: "**.supabase.co", pathname: "/storage/v1/object/public/**" },
       { protocol: "https", hostname: "**.supabase.in", pathname: "/storage/v1/object/public/**" },
