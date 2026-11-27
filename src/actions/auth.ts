@@ -15,17 +15,45 @@ function isSuspiciousEmail(email: string): boolean {
   return false;
 }
 
+/** Valida o token do Cloudflare Turnstile no servidor. */
+async function verifyTurnstileToken(token: string | null): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) {
+    // Em produção, não permite cadastro sem a secret configurada
+    return process.env.NODE_ENV !== "production";
+  }
+  if (!token) return false;
+
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ secret, response: token }),
+    });
+    const data = (await res.json()) as { success?: boolean };
+    return Boolean(data.success);
+  } catch {
+    return false;
+  }
+}
+
 export async function signUp(formData: FormData) {
   const supabase = await createClient();
   const email = (formData.get("email") as string).trim().toLowerCase();
   const password = formData.get("password") as string;
   const redirectTo = formData.get("redirectTo") as string | null;
+  const captchaToken = formData.get("cf-turnstile-response") as string | null;
   const next = safeNextPath(redirectTo);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const callbackUrl = `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`;
 
   if (isSuspiciousEmail(email)) {
     return { error: "Este endereço de e-mail não é permitido. Use um e-mail pessoal válido." };
+  }
+
+  const captchaOk = await verifyTurnstileToken(captchaToken);
+  if (!captchaOk) {
+    return { error: "Falha na verificação de segurança (CAPTCHA). Tente novamente." };
   }
 
   try {

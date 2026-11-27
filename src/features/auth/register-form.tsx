@@ -4,21 +4,39 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { signUp } from "@/actions/auth";
+import { Turnstile } from "@/components/ui/turnstile";
+
+const TURNSTILE_SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "0x4AAAAAAGVDn6s0qGFlxeA7";
 
 export const RegisterForm = ({ nextPath = "/portal" }: { nextPath?: string }) => {
   const [pending, startTransition] = useTransition();
   const [state, setState] = useState<{ error?: string; success?: string }>({});
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [resetTrigger, setResetTrigger] = useState(0);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setState({});
+
+    if (!captchaToken) {
+      setState({ error: "Complete a verificação de segurança antes de continuar." });
+      return;
+    }
+
+    const form = e.currentTarget;
     startTransition(async () => {
-      const fd = new FormData(e.currentTarget);
+      const fd = new FormData(form);
       if (fd.get("password") !== fd.get("confirm_password")) {
         setState({ error: "As senhas não conferem." });
         return;
       }
+      fd.set("cf-turnstile-response", captchaToken);
       const result = await signUp(fd);
+      if (result.error) {
+        setCaptchaToken("");
+        setResetTrigger((n) => n + 1);
+      }
       setState(result);
     });
   };
@@ -79,9 +97,16 @@ export const RegisterForm = ({ nextPath = "/portal" }: { nextPath?: string }) =>
               />
             </div>
           ))}
+          <Turnstile
+            siteKey={TURNSTILE_SITE_KEY}
+            onVerify={setCaptchaToken}
+            onExpire={() => setCaptchaToken("")}
+            onError={() => setCaptchaToken("")}
+            resetTrigger={resetTrigger}
+          />
           <button
             type="submit"
-            disabled={pending}
+            disabled={pending || !captchaToken}
             className="flex w-full items-center justify-center rounded-full bg-orange-500 py-3 text-sm font-bold text-white transition hover:bg-orange-600 disabled:opacity-60"
           >
             {pending ? "Criando conta…" : "Criar conta"}
