@@ -3,8 +3,16 @@ import { listAllRequests } from "@/actions/admin";
 import type { AdminListFilter } from "@/actions/admin";
 import { StatusBadge } from "@/components/membership/status-badge";
 import { RegisteredOnlyBadge } from "@/components/membership/registered-only-badge";
-import { Eye, Mail } from "lucide-react";
+import { Eye, Mail, ShieldAlert } from "lucide-react";
 import type { MembershipStatus } from "@/types/database";
+
+function isSuspiciousEmail(email: string): boolean {
+  const local = email.split("@")[0].toLowerCase();
+  const dotCount = (local.match(/\./g) ?? []).length;
+  if (dotCount > 4) return true;
+  if (/\.[a-z]*\d+$/.test(local)) return true;
+  return false;
+}
 
 const STATUS_OPTIONS: { value: AdminListFilter; label: string }[] = [
   { value: "", label: "Todos os cadastros" },
@@ -112,13 +120,20 @@ export default async function SolicitacoesPage({ searchParams }: Props) {
                 </tr>
               ) : (
                 requests.map((r) => (
-                  <tr key={r.user_id} className="hover:bg-gray-50 transition">
+                  <tr key={r.user_id} className={`hover:bg-gray-50 transition ${isSuspiciousEmail(r.email) ? "bg-red-50/40" : ""}`}>
                     <td className="px-4 py-3">
-                      <p className="font-medium text-gray-900">
-                        {r.full_name ?? r.email}
-                      </p>
+                      <div className="flex items-center gap-1.5">
+                        {isSuspiciousEmail(r.email) && (
+                          <span title="E-mail suspeito (possível bot)" className="text-red-500">
+                            <ShieldAlert size={14} />
+                          </span>
+                        )}
+                        <p className="font-medium text-gray-900">
+                          {r.full_name ?? r.email}
+                        </p>
+                      </div>
                       {r.full_name && (
-                        <p className="text-xs text-gray-500 mt-0.5">{r.email}</p>
+                        <p className="text-xs text-gray-500 mt-0.5 ml-5">{r.email}</p>
                       )}
                     </td>
                     <td className="px-4 py-3 text-gray-600">

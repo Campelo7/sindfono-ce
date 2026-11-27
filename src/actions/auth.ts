@@ -4,14 +4,29 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { safeNextPath } from "@/lib/safe-redirect";
 
+/** Detecta e-mails com padrão de bot (ex: n.i.wapeq.ej.i.k6.45@gmail.com) */
+function isSuspiciousEmail(email: string): boolean {
+  const local = email.split("@")[0].toLowerCase();
+  // Mais de 4 pontos na parte local
+  const dotCount = (local.match(/\./g) ?? []).length;
+  if (dotCount > 4) return true;
+  // Termina com letras+números após ponto (ex: .k36, .45, .i9.8)
+  if (/\.[a-z]*\d+$/.test(local)) return true;
+  return false;
+}
+
 export async function signUp(formData: FormData) {
   const supabase = await createClient();
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string).trim().toLowerCase();
   const password = formData.get("password") as string;
   const redirectTo = formData.get("redirectTo") as string | null;
   const next = safeNextPath(redirectTo);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const callbackUrl = `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`;
+
+  if (isSuspiciousEmail(email)) {
+    return { error: "Este endereço de e-mail não é permitido. Use um e-mail pessoal válido." };
+  }
 
   try {
     const { error } = await supabase.auth.signUp({
