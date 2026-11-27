@@ -88,8 +88,7 @@ export async function getRequestById(requestId: string) {
     .select(`
       *,
       profile:profiles(*),
-      documents(*),
-      document_reviews(*),
+      documents(*, document_reviews(*)),
       status_history(*),
       payments(*)
     `)
